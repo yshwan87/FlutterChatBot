@@ -1,11 +1,13 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
 import 'package:chatbot/model.dart';
 import 'package:chatbot/widgets/chatMessageWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'constants.dart';
-import 'widgets/buildSubmit.dart';
 
 class ChatBot extends StatefulWidget {
   const ChatBot({super.key});
@@ -24,6 +26,32 @@ class _ChatBotState extends State<ChatBot> {
   void initState() {
     super.initState();
     isLoading = false;
+  }
+
+  Future<String> generateResponse(String prompt) async {
+    const apiKey = apiSecretKey;
+    var url = Uri.https("api.openai.com", "/v1/completions");
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey'
+      },
+      body: jsonEncode(
+        {
+          "model": "text-davinci-003",
+          "prompt": prompt,
+          "temperature": 0.9,
+          "max_tokens": 150,
+          "top_p": 1,
+          "frequency_penalty": 0.0,
+          "presence_penalty": 0.6,
+        },
+      ),
+    );
+
+    Map<String, dynamic> newRes = jsonDecode(response.body);
+    return newRes['choices'][0]['text'];
   }
 
   @override
@@ -65,7 +93,7 @@ class _ChatBotState extends State<ChatBot> {
                     //input field
                     _buildInput(),
                     //submit button
-                    buildSubmit(isLoading),
+                    _buildSubmit(),
                   ],
                 ),
               )
@@ -107,6 +135,63 @@ class _ChatBotState extends State<ChatBot> {
           chatMessageType: message.chatMessageType,
         );
       }),
+    );
+  }
+
+  Widget _buildSubmit() {
+    return Visibility(
+      visible: !isLoading,
+      child: Container(
+        color: botBackgroundColor,
+        child: IconButton(
+          onPressed: () {
+            setState(
+              () {
+                _messages.add(
+                  ChatMessage(
+                    text: _textController.text,
+                    chatMessageType: ChatMessageType.user,
+                  ),
+                );
+                isLoading = true;
+              },
+            );
+            var input = _textController.text;
+            _textController.clear();
+            Future.delayed(const Duration(milliseconds: 50)).then((value) => _scrollDown());
+
+            generateResponse(input).then(
+              (value) {
+                setState(
+                  () {
+                    isLoading = false;
+                    _messages.add(
+                      ChatMessage(
+                        text: value,
+                        chatMessageType: ChatMessageType.bot,
+                      ),
+                    );
+                    _textController.clear();
+                    Future.delayed(const Duration(milliseconds: 50)).then((value) => _scrollDown());
+                  },
+                );
+              },
+            );
+          },
+          icon: const Icon(
+            Icons.send_rounded,
+            color: kGrayColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
     );
   }
 }
