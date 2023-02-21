@@ -15,3 +15,5 @@ const kTextColor = Color(0xFF4D5875);
 const avatarbackgroundColor = Color.fromRGBO(16, 163, 127, 1);
 
 const kDefaultPadding = 20.0;
+
+const apiSecretKey = "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";
