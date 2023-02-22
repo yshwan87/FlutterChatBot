@@ -41,11 +41,11 @@ class _ChatBotState extends State<ChatBot> {
         {
           "model": "text-davinci-003",
           "prompt": prompt,
-          "temperature": 0.9,
-          "max_tokens": 150,
+          "temperature": 0,
+          "max_tokens": 2000,
           "top_p": 1,
           "frequency_penalty": 0.0,
-          "presence_penalty": 0.6,
+          "presence_penalty": 0.0,
         },
       ),
     );
@@ -145,38 +145,7 @@ class _ChatBotState extends State<ChatBot> {
         color: botBackgroundColor,
         child: IconButton(
           onPressed: () {
-            setState(
-              () {
-                _messages.add(
-                  ChatMessage(
-                    text: _textController.text,
-                    chatMessageType: ChatMessageType.user,
-                  ),
-                );
-                isLoading = true;
-              },
-            );
-            var input = _textController.text;
-            _textController.clear();
-            Future.delayed(const Duration(milliseconds: 50)).then((value) => _scrollDown());
-
-            generateResponse(input).then(
-              (value) {
-                setState(
-                  () {
-                    isLoading = false;
-                    _messages.add(
-                      ChatMessage(
-                        text: value,
-                        chatMessageType: ChatMessageType.bot,
-                      ),
-                    );
-                    _textController.clear();
-                    Future.delayed(const Duration(milliseconds: 50)).then((value) => _scrollDown());
-                  },
-                );
-              },
-            );
+            _textController.text.isEmpty ? "" : _setUserAndBotChat();
           },
           icon: const Icon(
             Icons.send_rounded,
@@ -184,6 +153,41 @@ class _ChatBotState extends State<ChatBot> {
           ),
         ),
       ),
+    );
+  }
+
+  void _setUserAndBotChat() {
+    setState(
+      () {
+        _messages.add(
+          ChatMessage(
+            text: _textController.text,
+            chatMessageType: ChatMessageType.user,
+          ),
+        );
+        isLoading = true;
+      },
+    );
+    var input = "${_textController.text}.";
+    _textController.clear();
+    Future.delayed(const Duration(milliseconds: 50)).then((value) => _scrollDown());
+
+    generateResponse(input).then(
+      (value) {
+        setState(
+          () {
+            isLoading = false;
+            _messages.add(
+              ChatMessage(
+                text: value,
+                chatMessageType: ChatMessageType.bot,
+              ),
+            );
+            _textController.clear();
+            Future.delayed(const Duration(milliseconds: 50)).then((value) => _scrollDown());
+          },
+        );
+      },
     );
   }
 

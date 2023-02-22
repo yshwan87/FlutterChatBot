@@ -45,7 +45,7 @@ class ChatMessageWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: chatMessageType == ChatMessageType.bot ? const EdgeInsets.only(bottom: 30, left: 12) : const EdgeInsets.all(10),
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(
                       Radius.circular(8),
