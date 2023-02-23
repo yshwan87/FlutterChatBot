@@ -43,13 +43,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-  equatable:
-    dependency: transitive
-    description:
-      name: equatable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.5"
   fake_async:
     dependency: transitive
     description:
@@ -116,13 +109,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0"
-  openai_client:
-    dependency: "direct main"
-    description:
-      name: openai_client
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.5"
   path:
     dependency: transitive
     description:

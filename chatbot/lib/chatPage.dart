@@ -46,12 +46,15 @@ class _ChatBotState extends State<ChatBot> {
           "top_p": 1,
           "frequency_penalty": 0.0,
           "presence_penalty": 0.0,
+          "stop": "."
         },
       ),
     );
 
     Map<String, dynamic> newRes = jsonDecode(response.body);
-    return newRes['choices'][0]['text'];
+    var multiline = newRes['choices'][0]['text'];
+    var singleline = multiline.replaceAll("\n\n", "");
+    return singleline;
   }
 
   @override
@@ -59,18 +62,18 @@ class _ChatBotState extends State<ChatBot> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 100,
+          toolbarHeight: 80,
           title: const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              "OpenAI's ChatGPT",
+              "Chat with AI",
               maxLines: 2,
               textAlign: TextAlign.center,
             ),
           ),
-          backgroundColor: botBackgroundColor,
+          backgroundColor: kPrimaryColor,
         ),
-        backgroundColor: backgroundColor,
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: Column(
             children: [
@@ -106,18 +109,16 @@ class _ChatBotState extends State<ChatBot> {
 
   Expanded _buildInput() {
     return Expanded(
-      child: TextField(
-        textCapitalization: TextCapitalization.sentences,
-        style: const TextStyle(color: Colors.white),
-        controller: _textController,
-        decoration: const InputDecoration(
-          fillColor: botBackgroundColor,
-          filled: true,
-          //border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(4.0))),
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          disabledBorder: InputBorder.none,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: TextField(
+          textCapitalization: TextCapitalization.sentences,
+          style: const TextStyle(color: Colors.black),
+          controller: _textController,
+          decoration: const InputDecoration(
+            hintText: "Write message...",
+            hintStyle: TextStyle(color: Colors.black54),
+          ),
         ),
       ),
     );
@@ -142,14 +143,14 @@ class _ChatBotState extends State<ChatBot> {
     return Visibility(
       visible: !isLoading,
       child: Container(
-        color: botBackgroundColor,
+        color: Colors.white,
         child: IconButton(
           onPressed: () {
             _textController.text.isEmpty ? "" : _setUserAndBotChat();
           },
           icon: const Icon(
             Icons.send_rounded,
-            color: kGrayColor,
+            color: kPrimaryColor,
           ),
         ),
       ),
